@@ -5,7 +5,11 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!.env.docker.example
 dist/
 build/
 *.egg-info/
 .antigravity-worktrees/
+
+/legacy-bin/*
+!/legacy-bin/.gitkeep
