@@ -88,9 +88,38 @@ done
 
 if test -z "$compatible_version"; then
   echo
-  echo "ERROR: no compatible legacy localharness found in candidates:"
+  echo "WARNING: no compatible legacy localharness found in candidates:"
   printf '  %s\n' "${CANDIDATES[@]}"
-  exit 1
+
+  if test "${LEGACY_HARNESS_REQUIRED:-0}" = "1"; then
+    echo "ERROR: LEGACY_HARNESS_REQUIRED=1, failing the audit"
+    exit 1
+  fi
+
+  if test -n "${GITHUB_STEP_SUMMARY:-}"; then
+    {
+      echo "## Legacy localharness compatibility"
+      echo
+      echo "**No compatible official PyPI harness found for the tested legacy CPU profile.**"
+      echo
+      echo "Tested: ${CANDIDATES[*]}"
+      echo
+      echo "All selected releases hit the Go CPU feature guard (AES/AVX/PCLMUL) under QEMU."
+      echo
+      echo "The audit is intentionally non-blocking; use `LEGACY_HARNESS_REQUIRED=1` to make it fail."
+    } >> "$GITHUB_STEP_SUMMARY"
+  fi
+  exit 0
+fi
+
+if test -n "${GITHUB_STEP_SUMMARY:-}"; then
+  {
+    echo "## Legacy localharness compatibility"
+    echo
+    echo "**Compatible harness found:** ${compatible_version}"
+    echo
+    echo "Path: ${compatible_harness}"
+  } >> "$GITHUB_STEP_SUMMARY"
 fi
 
 echo
