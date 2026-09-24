@@ -4,6 +4,7 @@ import os
 import platform
 from dataclasses import dataclass
 from pathlib import Path
+from collections.abc import Mapping
 
 
 class HarnessCompatibilityError(RuntimeError):
@@ -91,7 +92,10 @@ def _validated_binary(path: str | None) -> str | None:
     return str(candidate)
 
 
-def resolve_harness_env(cpu: CPUInfo | None = None) -> dict[str, str]:
+def resolve_harness_env(
+    cpu: CPUInfo | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, str]:
     """Resolve an optional external harness without mutating global os.environ.
 
     Priority:
@@ -101,15 +105,16 @@ def resolve_harness_env(cpu: CPUInfo | None = None) -> dict[str, str]:
       3. No override — let the Google SDK use its bundled harness.
     """
     cpu = cpu or get_cpu_info()
+    env = os.environ if environ is None else environ
 
-    explicit = _validated_binary(os.getenv("ANTIGRAVITY_HARNESS_PATH"))
+    explicit = _validated_binary(env.get("ANTIGRAVITY_HARNESS_PATH"))
     if explicit:
         return {"ANTIGRAVITY_HARNESS_PATH": explicit}
 
     # An explicitly configured legacy binary is always honored. This is useful
     # when the bundled Google binary is known to be incompatible even though
     # the host advertises a partially newer x86 feature set.
-    legacy = _validated_binary(os.getenv("ANTIGRAVITY_LEGACY_HARNESS_PATH"))
+    legacy = _validated_binary(env.get("ANTIGRAVITY_LEGACY_HARNESS_PATH"))
     if legacy:
         return {"ANTIGRAVITY_HARNESS_PATH": legacy}
 
