@@ -122,7 +122,7 @@ export ANTIGRAVITY_LEGACY_HARNESS_PATH=/opt/antigravity/localharness-legacy
 Приоритет:
 
 1. `ANTIGRAVITY_HARNESS_PATH` — явный override на любой CPU.
-2. `ANTIGRAVITY_LEGACY_HARNESS_PATH` — автоматически выбирается на x86-64 без AVX.
+2. `ANTIGRAVITY_LEGACY_HARNESS_PATH` — явный legacy override; без AVX он становится автоматическим fallback.
 3. На современном CPU используется `localharness`, который поставляет Google SDK.
 
 Важно: этот репозиторий **не содержит исходников Google `localharness`** и поэтому не может самостоятельно пересобрать официальный harness с другим `GOAMD64`. Нужен совместимый внешний binary, собранный/полученный отдельно.
