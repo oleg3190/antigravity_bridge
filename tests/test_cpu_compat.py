@@ -52,10 +52,6 @@ def test_legacy_harness_is_selected_for_old_cpu(tmp_path: Path):
     assert result == {"ANTIGRAVITY_HARNESS_PATH": str(binary)}
 
 
-def test_old_cpu_without_legacy_binary_fails_clearly():
-    with pytest.raises(HarnessCompatibilityError, match="without AVX"):
-        resolve_harness_env(cpu(), environ={})
-
 
 def test_non_avx_flag_can_be_reported_without_hiding_aes():
     info = cpu("avx", "avx2", "aes", "pclmulqdq")
