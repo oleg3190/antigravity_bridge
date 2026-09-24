@@ -25,10 +25,13 @@ services:
       HTTPS_PROXY: ${HTTPS_PROXY:-socks5h://host.docker.internal:2080}
       HTTP_PROXY: ${HTTP_PROXY:-}
       NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,host.docker.internal}
+      ANTIGRAVITY_HARNESS_PATH: ${ANTIGRAVITY_HARNESS_PATH:-}
+      ANTIGRAVITY_LEGACY_HARNESS_PATH: ${ANTIGRAVITY_LEGACY_HARNESS_PATH:-/opt/antigravity/localharness-legacy}
 
     volumes:
       - .:/app
       - ${WORKSPACE_ROOT:-./workspace}:/workspace
+      - ${ANTIGRAVITY_LEGACY_HARNESS_DIR:-./legacy-bin}:/opt/antigravity:ro
       - bridge-data:/data
 
     restart: unless-stopped
