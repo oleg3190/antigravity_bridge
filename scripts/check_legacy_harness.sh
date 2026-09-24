@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Ordered newest -> oldest. 0.1.6 is included because CI must prove that it
 # is NOT compatible with the target CPU before falling back further.
-CANDIDATES=("0.1.6" "0.1.5" "0.1.4" "0.1.3" "0.1.2")
+CANDIDATES=("0.1.6" "0.1.5" "0.1.4" "0.1.3" "0.1.2" "0.1.1" "0.1.0")
 WORKDIR="$(mktemp -d)"
 trap 'rm -rf "$WORKDIR"' EXIT
 
