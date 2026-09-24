@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: antigravity-bridge:3.2.8
+    image: antigravity-bridge:3.2.9
     container_name: antigravity-bridge
 
     # Normal Docker networking; reach the host SOCKS5 proxy via host.docker.internal.
