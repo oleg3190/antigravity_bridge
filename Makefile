@@ -9,7 +9,7 @@ IMAGE := antigravity-bridge:3.2.9
 
 help:
 	@echo ""
-	@echo "Antigravity Bridge 3.2.7"
+	@echo "Antigravity Bridge 3.2.9"
 	@echo ""
 	@echo "  make init          Create .env and workspace"
 	@echo "  make build         Build Docker image"
