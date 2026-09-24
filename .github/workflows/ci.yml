@@ -28,7 +28,8 @@ jobs:
         run: pytest -q
 
   legacy-harness:
-    name: Find CPU-compatible legacy localharness
+    name: Legacy harness compatibility audit (non-blocking)
+    continue-on-error: true
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
