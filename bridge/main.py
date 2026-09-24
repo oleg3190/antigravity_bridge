@@ -16,6 +16,6 @@ manager = JobManager(
 
 app = FastAPI(
     title="Antigravity Bridge",
-    version="3.2.8",
+    version="3.2.9",
 )
 app.include_router(build_router(manager))
