@@ -2,14 +2,14 @@ SHELL := /bin/bash
 
 COMPOSE := docker compose
 SERVICE := antigravity-bridge
-IMAGE := antigravity-bridge:3.2.8
+IMAGE := antigravity-bridge:3.2.9
 
 .PHONY: help init build rebuild up down restart start stop logs status ps health \
-        shell check test smoke clean doctor proxy-check workspace
+        shell check cpu-check test smoke clean doctor proxy-check workspace
 
 help:
 	@echo ""
-	@echo "Antigravity Bridge 3.2.7"
+	@echo "Antigravity Bridge 3.2.9"
 	@echo ""
 	@echo "  make init          Create .env and workspace"
 	@echo "  make build         Build Docker image"
@@ -84,6 +84,9 @@ check:
 	@echo "Container memory:"
 	@docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.MemPerc}}' $(SERVICE) 2>/dev/null || true
 	$(COMPOSE) exec -T $(SERVICE) python scripts/check_install.py
+
+cpu-check:
+	python3 scripts/cpu_check.py
 
 test:
 	$(COMPOSE) exec $(SERVICE) pytest -q

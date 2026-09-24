@@ -1,4 +1,4 @@
-# Antigravity Bridge v3.2
+# Antigravity Bridge v3.2.9
 
 Native Google Antigravity SDK integration for a reliable coding-agent bridge.
 
@@ -92,6 +92,61 @@ workspace root. The compose service drops Linux capabilities and enables
 application-level isolation. The SDK documentation explicitly warns that its OS
 sandbox may be unavailable on some environments, so it is not treated as the only
 security boundary.
+
+
+## Старые Intel x86-64 без AVX
+
+Google Antigravity запускает внутри SDK скомпилированный `localharness`. На старых x86-64 CPU без AVX такой binary может завершаться через `SIGILL` (`Illegal instruction`). Bridge теперь проверяет CPU **до первого запуска агента** и не допускает необъяснимого падения процесса.
+
+Диагностика:
+
+```bash
+make cpu-check
+# или
+python3 scripts/cpu_check.py
+```
+
+Для CPU без AVX можно указать совместимый внешний `localharness`:
+
+```bash
+export ANTIGRAVITY_HARNESS_PATH=/opt/antigravity/localharness-legacy
+uvicorn bridge.main:app --host 127.0.0.1 --port 8090
+```
+
+Для автоматического fallback используйте:
+
+```bash
+export ANTIGRAVITY_LEGACY_HARNESS_PATH=/opt/antigravity/localharness-legacy
+```
+
+Приоритет:
+
+1. `ANTIGRAVITY_HARNESS_PATH` — явный override на любой CPU.
+2. `ANTIGRAVITY_LEGACY_HARNESS_PATH` — явный legacy override; без AVX он становится автоматическим fallback.
+3. На современном CPU используется `localharness`, который поставляет Google SDK.
+
+Важно: этот репозиторий **не содержит исходников Google `localharness`** и поэтому не может самостоятельно пересобрать официальный harness с другим `GOAMD64`. Нужен совместимый внешний binary, собранный/полученный отдельно.
+
+### Docker
+
+Положите legacy binary в:
+
+```text
+./legacy-bin/localharness-legacy
+```
+
+Затем:
+
+```bash
+cp .env.docker.example .env
+make build
+docker compose up -d
+curl http://127.0.0.1:8090/health
+```
+
+Bridge подключит этот файл как `/opt/antigravity/localharness-legacy` внутри контейнера.
+
+Для твоего Intel Core i3 M 370 ожидается `avx=false`; без внешнего совместимого `localharness` bridge остановит запуск с диагностикой вместо `SIGILL`.
 
 ## Install
 
@@ -208,7 +263,7 @@ docker compose build --no-cache --progress=plain
 and inspect the last 30 lines. The final command is intentionally split into separate `RUN` layers so dependency failures, SDK import failures and test failures are distinguishable.
 
 
-## Docker-first setup (v3.2.7)
+## Docker-first setup (v3.2.9)
 
 The Docker image uses Python 3.11 and installs the Antigravity SDK inside the container, so the host Python version does not matter.
 
@@ -278,7 +333,7 @@ docker compose exec antigravity-bridge sh -lc 'env | grep -i proxy'
 
 The compose file maps `host.docker.internal` to the Docker host with `host-gateway`, which is required on Linux.
 
-## v3.2.7
+## v3.2.9
 
 - Docker uses Python 3.11.
 - Runtime supports a host-local SOCKS5 proxy on `127.0.0.1:2080`.

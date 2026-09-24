@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
 from .jobs import JobManager
+from .cpu_compat import diagnostic_payload
 from .models import CreateJobRequest
 
 router = APIRouter()
@@ -13,7 +14,7 @@ router = APIRouter()
 def build_router(manager: JobManager) -> APIRouter:
     @router.get("/health")
     async def health():
-        return {"ok": True, "version": "3.2.8"}
+        return {"ok": True, "version": "3.2.9", "cpu": diagnostic_payload()}
 
     @router.post("/v1/jobs")
     async def create_job(req: CreateJobRequest):
