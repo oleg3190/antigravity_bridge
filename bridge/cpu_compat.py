@@ -39,7 +39,7 @@ class CPUInfo:
     @property
     def legacy_x86(self) -> bool:
         """Old x86-64 CPUs such as Westmere/Arrandale without AVX."""
-        return self.is_x86_64 and not self.supports_avx
+        return self.is_x86_64 and bool(self.flags) and not self.supports_avx
 
 
 def _read_proc_cpuinfo() -> str:
