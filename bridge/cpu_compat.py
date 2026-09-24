@@ -106,11 +106,15 @@ def resolve_harness_env(cpu: CPUInfo | None = None) -> dict[str, str]:
     if explicit:
         return {"ANTIGRAVITY_HARNESS_PATH": explicit}
 
-    if cpu.legacy_x86:
-        legacy = _validated_binary(os.getenv("ANTIGRAVITY_LEGACY_HARNESS_PATH"))
-        if legacy:
-            return {"ANTIGRAVITY_HARNESS_PATH": legacy}
+    # An explicitly configured legacy binary is always honored. This is useful
+    # when the bundled Google binary is known to be incompatible even though
+    # the host advertises a partially newer x86 feature set.
+    legacy = _validated_binary(os.getenv("ANTIGRAVITY_LEGACY_HARNESS_PATH"))
+    if legacy:
+        return {"ANTIGRAVITY_HARNESS_PATH": legacy}
 
+    legacy_x86 = cpu.is_x86_64 and bool(cpu.flags) and "avx" not in cpu.flags
+    if legacy_x86:
         raise HarnessCompatibilityError(
             "The host CPU is an old x86-64 processor without AVX, while the "
             "bundled Google Antigravity localharness may require newer CPU "
