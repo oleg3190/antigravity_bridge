@@ -26,3 +26,31 @@ jobs:
 
       - name: Test
         run: pytest -q
+
+  legacy-harness:
+    name: Legacy harness compatibility audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Go (metadata inspection)
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
+      - name: Install QEMU user-mode
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user
+
+      - name: Verify legacy localharness
+        run: bash scripts/check_legacy_harness.sh
+        env:
+          LEGACY_HARNESS_REQUIRED: "0"
