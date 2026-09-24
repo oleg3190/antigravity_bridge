@@ -7,6 +7,8 @@ from typing import Any, AsyncIterator
 from google.antigravity import Agent, LocalAgentConfig, CapabilitiesConfig, types
 from google.antigravity.hooks import policy
 
+from .cpu_compat import resolve_harness_env
+
 
 FINISH_SCHEMA = {
     "type": "object",
@@ -68,7 +70,10 @@ class AntigravityCodingAgent:
             policy.deny("run_command", when=self._deny_dangerous_command),
         ]
 
+        harness_env = resolve_harness_env()
+
         return LocalAgentConfig(
+            env=harness_env,
             system_instructions=(
                 "You are a senior software engineer working inside an isolated coding workspace. "
                 "Inspect relevant files before editing. Make only "
