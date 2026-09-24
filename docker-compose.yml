@@ -1,0 +1,49 @@
+services:
+  antigravity-bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: antigravity-bridge:3.2.8
+    container_name: antigravity-bridge
+
+    # Normal Docker networking; reach the host SOCKS5 proxy via host.docker.internal.
+    ports:
+      - "8090:8090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    env_file:
+      - .env
+
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+
+    working_dir: /app
+    environment:
+      HOME: /home/bridge
+      PYTHONUNBUFFERED: "1"
+      ALL_PROXY: ${ALL_PROXY:-socks5h://host.docker.internal:2080}
+      HTTPS_PROXY: ${HTTPS_PROXY:-socks5h://host.docker.internal:2080}
+      HTTP_PROXY: ${HTTP_PROXY:-}
+      NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,host.docker.internal}
+
+    volumes:
+      - .:/app
+      - ${WORKSPACE_ROOT:-./workspace}:/workspace
+      - bridge-data:/data
+
+    restart: unless-stopped
+    mem_limit: 2g
+    mem_reservation: 512m
+    init: true
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    tmpfs:
+      - /tmp:size=512m
+
+volumes:
+  bridge-data:

@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+*.pyc
+*.pyo
+*.log
+.env
+.antigravity-worktrees
+dist
+build
+*.egg-info
+workspace/*
