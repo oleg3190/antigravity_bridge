@@ -28,7 +28,7 @@ jobs:
         run: pytest -q
 
   legacy-harness:
-    name: Verify legacy localharness 0.1.6
+    name: Find CPU-compatible legacy localharness
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
