@@ -28,35 +28,33 @@ def test_legacy_x86_is_detected_without_avx():
     assert info.supports_aes is False
 
 
-def test_explicit_harness_overrides_cpu_check(monkeypatch, tmp_path: Path):
+def test_explicit_harness_overrides_cpu_check(tmp_path: Path):
     binary = tmp_path / "localharness"
     binary.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     binary.chmod(0o755)
-    monkeypatch.setenv("ANTIGRAVITY_HARNESS_PATH", str(binary))
-
-    result = resolve_harness_env(cpu())
+    result = resolve_harness_env(
+        cpu(),
+        environ={"ANTIGRAVITY_HARNESS_PATH": str(binary)},
+    )
 
     assert result == {"ANTIGRAVITY_HARNESS_PATH": str(binary)}
 
 
-def test_legacy_harness_is_selected_for_old_cpu(monkeypatch, tmp_path: Path):
+def test_legacy_harness_is_selected_for_old_cpu(tmp_path: Path):
     binary = tmp_path / "localharness-legacy"
     binary.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     binary.chmod(0o755)
-    monkeypatch.delenv("ANTIGRAVITY_HARNESS_PATH", raising=False)
-    monkeypatch.setenv("ANTIGRAVITY_LEGACY_HARNESS_PATH", str(binary))
-
-    result = resolve_harness_env(cpu())
+    result = resolve_harness_env(
+        cpu(),
+        environ={"ANTIGRAVITY_LEGACY_HARNESS_PATH": str(binary)},
+    )
 
     assert result == {"ANTIGRAVITY_HARNESS_PATH": str(binary)}
 
 
-def test_old_cpu_without_legacy_binary_fails_clearly(monkeypatch):
-    monkeypatch.delenv("ANTIGRAVITY_HARNESS_PATH", raising=False)
-    monkeypatch.delenv("ANTIGRAVITY_LEGACY_HARNESS_PATH", raising=False)
-
+def test_old_cpu_without_legacy_binary_fails_clearly():
     with pytest.raises(HarnessCompatibilityError, match="without AVX"):
-        resolve_harness_env(cpu())
+        resolve_harness_env(cpu(), environ={})
 
 
 def test_non_avx_flag_can_be_reported_without_hiding_aes():
