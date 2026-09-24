@@ -28,8 +28,7 @@ jobs:
         run: pytest -q
 
   legacy-harness:
-    name: Legacy harness compatibility audit (non-blocking)
-    continue-on-error: true
+    name: Legacy harness compatibility audit
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -53,3 +52,5 @@ jobs:
 
       - name: Verify legacy localharness
         run: bash scripts/check_legacy_harness.sh
+        env:
+          LEGACY_HARNESS_REQUIRED: "0"
