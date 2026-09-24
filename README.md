@@ -263,7 +263,7 @@ docker compose build --no-cache --progress=plain
 and inspect the last 30 lines. The final command is intentionally split into separate `RUN` layers so dependency failures, SDK import failures and test failures are distinguishable.
 
 
-## Docker-first setup (v3.2.7)
+## Docker-first setup (v3.2.9)
 
 The Docker image uses Python 3.11 and installs the Antigravity SDK inside the container, so the host Python version does not matter.
 
