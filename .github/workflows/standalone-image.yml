@@ -1,6 +1,15 @@
 name: Standalone Docker Image
 
 on:
+  pull_request:
+    paths:
+      - "Dockerfile.standalone"
+      - ".dockerignore"
+      - "bridge/**"
+      - "scripts/**"
+      - "pyproject.toml"
+      - "setup.py"
+      - ".github/workflows/standalone-image.yml"
   push:
     branches: ["main"]
     paths:
